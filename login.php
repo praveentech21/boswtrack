@@ -1,158 +1,161 @@
-﻿<?php
-
-include "connect.php";
-
+<?php
 session_start();
-if(isset($_SESSION['uname'])){
-  header("location:parent.php");
+include("connect.php");
+if(!empty($_SESSION['eid'])){
+  header("location: delivary.php");
 }
-if(isset($_POST['login'])){
-  $uname = $_POST['uname'];
-  $pass = $_POST['pass'];
-  $run = mysqli_fetch_assoc(mysqli_query($con ,"select * from parent where pid = '$uname'"));
-  if(mysqli_num_rows(mysqli_query($con ,"select * from parent where pid = '$uname'"))==0){
-    echo "<script>alert('You had Entered Invalid Username or Password');</script>";
-  }
-  elseif($run['pass']==$pass){
-    $_SESSION['uname'] = $uname;
-    header("location:parent.php");
-  }
+elseif(!empty($_SESSION['supid'])){
+  header("location: index.php");
 }
-// All Setted Shiva and this is sending to git as All set SHiva
-?>
-<!DOCTYPE html>
-<html lang="en">
+if(isset($_POST['submit'])){
+  $mobile=$_POST['mobile'];
+  $pass=$_POST['pass'];
+  $run1 = mysqli_query($con,"select * from team where mobile='$mobile' and pass='$pass'");
+  if(mysqli_num_rows($run1)>0){
+    $run2 = mysqli_fetch_array($run1);
+    $_SESSION['eid']=$run2['eid'];
+    header("location: delivary.php");
+  }
+    else{
+      echo "<script>alert('Invalid Username or Password')</script>";
+    }
+}
 
-<head>
-  <!-- Meta tags  -->
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport"
-    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+?><!DOCTYPE html>
+<html
+  lang="en"
+  class="light-style customizer-hide"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="Bhavani/"
+  data-template="vertical-menu-template-free"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
 
-  <title>Parent Login</title>
-  <link rel="icon" type="image/png" href="Bhavani/images/favicon.png">
+    <title>Login Basic - Pages | Sneat - Bootstrap 5 HTML Admin Template - Pro</title>
 
-  <!-- CSS Assets -->
-  <link rel="stylesheet" href="Bhavani/css/app.css">
+    <meta name="description" content="" />
 
-  <!-- Javascript Assets -->
-  <script src="Bhavani/js/app.js" defer=""></script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="Bhavani/img/favicon/favicon.ico" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link
-    href="css2?family=Inter:wght@400;500;600;700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
-    rel="stylesheet">
-  <script>
-    /**
-     * THIS SCRIPT REQUIRED FOR PREVENT FLICKERING IN SOME BROWSERS
-     */
-    localStorage.getItem("_x_darkMode_on") === "true" &&
-      document.documentElement.classList.add("dark");
-  </script>
-</head>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
 
-<body x-data="" class="is-header-blur" x-bind="$store.global.documentBody">
-  <!-- App preloader-->
-  <div class="app-preloader fixed z-50 grid h-full w-full place-content-center bg-slate-50 dark:bg-navy-900">
-    <div class="app-preloader-inner relative inline-block h-48 w-48"></div>
-  </div>
+    <!-- Icons. Uncomment required icon fonts -->
+    <link rel="stylesheet" href="Bhavani/vendor/fonts/boxicons.css" />
 
-  <!-- Page Wrapper -->
-  <div id="root" class="min-h-100vh flex grow bg-slate-50 dark:bg-navy-900" x-cloak="">
-    <main class="grid w-full grow grid-cols-1 place-items-center">
-      <div class="w-full max-w-[26rem] p-4 sm:px-5">
-        <div class="text-center">
-          <img class="mx-auto h-16 w-16" src="Bhavani/images/mlogo-removebg-preview.png" style="height: 150px;  width: 350px;"
-            alt="logo">
-          <div class="mt-4">
-            <h2 class="text-2xl font-semibold text-slate-600 dark:text-navy-100">
-            Parent Login
-            </h2>
-            <p class="text-slate-400 dark:text-navy-300">
-              Login here
-            </p>
-          </div>
-        </div>
-        <div class="card mt-5 rounded-lg p-5 lg:p-7">
-          <form action="#" method="post">
-          <label class="relative flex">
-            <input name="uname"
-              class="form-input peer w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 hover:border-slate-400 focus:z-10 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-              placeholder="Mobile Number" type="text">
-            <span
-              class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200" fill="none"
-                viewbox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                </path>
-              </svg>
-            </span>
-          </label>
-          <label class="relative mt-4 flex">
-            <input name="pass"
-              class="form-input peer w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:z-10 hover:border-slate-400 focus:z-10 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent"
-              placeholder="Password" type="password">
-            <span 
-              class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors duration-200" fill="none"
-                viewbox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-                </path>
-              </svg>
-            </span>
-          </label>
-          
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="Bhavani/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="Bhavani/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="Bhavani/css/demo.css" />
 
-          <!-- <div class="mt-4 flex items-center space-x-2">
-              <input class="form-checkbox is-basic h-5 w-5 rounded border-slate-400/70 checked:border-primary checked:bg-primary hover:border-primary focus:border-primary dark:border-navy-400 dark:checked:border-accent dark:checked:bg-accent dark:hover:border-accent dark:focus:border-accent" type="checkbox">
-              <p class="line-clamp-1">
-                I agree with
-                <a href="#" class="text-slate-400 hover:underline dark:text-navy-300">
-                  privacy policy
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="Bhavani/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+
+    <!-- Page CSS -->
+    <!-- Page -->
+    <link rel="stylesheet" href="Bhavani/vendor/css/pages/page-auth.css" />
+    <!-- Helpers -->
+    <script src="Bhavani/vendor/js/helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="Bhavani/js/config.js"></script>
+  </head>
+
+  <body>
+    <!-- Content -->
+
+    <div class="container-xxl">
+      <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+          <!-- Register -->
+          <div class="card">
+            <div class="card-body">
+              <!-- Logo -->
+              <div class="app-brand justify-content-center">
+                <a href="index.html" class="app-brand-link gap-2">
+                  <span class="app-brand-text demo text-body fw-bolder">Lunch Box</span>
+                </a>
+              </div>
+              <!-- /Logo -->
+              <form id="formAuthentication" class="mb-3" action="#" method="POST">
+                <div class="mb-3">
+                  <label for="email" class="form-label">Mobile Number</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="email"
+                    name="mobile"
+                    placeholder="Enter your Mobile Number"
+                    autofocus
+                  />
+                </div>
+                <div class="mb-3 form-password-toggle">
+                  <div class="d-flex justify-content-between">
+                    <label class="form-label" for="password">Password</label>
+                  </div>
+                  <div class="input-group input-group-merge">
+                    <input
+                      type="password"
+                      id="password"
+                      class="form-control"
+                      name="pass"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      aria-describedby="password"
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <button class="btn btn-primary d-grid w-100" name="submit" type="submit">Sign in</button>
+                </div>
+              </form>
+
+              <p class="text-center">
+                <span>Sig in as Super Admin</span>
+                <a href="suplogin.php">
+                  <span>Super Admin Sign</span>
                 </a>
               </p>
-            </div> -->
-          <button name="login" type="submit" 
-            class="btn mt-5 w-full bg-primary font-medium " style="color: white;" >
-            Login
-          </button>
-          </form>
-          <!-- <div class="mt-4 text-center text-xs+">
-              <p class="line-clamp-1">
-                <span>Already have an account? </span>
-                <a class="text-primary transition-colors hover:text-primary-focus dark:text-accent-light dark:hover:text-accent" href="pages-login-1.html">Sign In</a>
-              </p>
-            </div> -->
-          <!-- <div class="my-7 flex items-center space-x-3">
-            <div class="h-px flex-1 bg-slate-200 dark:bg-navy-500"></div>
-            <p class="text-tiny+ uppercase">or <a href="#" class="text-slate-400 hover:underline dark:text-navy-300">Register Now as a Parent</a> as a parent</p>
-            <div class="h-px flex-1 bg-slate-200 dark:bg-navy-500"></div>
-          </div> -->
-          <!-- <div class="flex space-x-4">
-           <button
-              class="btn w-full space-x-3 border border-slate-300 font-medium text-slate-800 hover:bg-slate-150 focus:bg-slate-150 active:bg-slate-150/80 dark:border-navy-450 dark:text-navy-50 dark:hover:bg-navy-500 dark:focus:bg-navy-500 dark:active:bg-navy-500/90"> -->
-              <!-- <img class="h-5.5 w-5.5" src="Bhavani/images/logos/google.svg" alt="logo"> -->
-              <!-- <a href="delivary.php"><span>Delivery Agent</span></a> 
-            </button>
-          </div> -->
+            </div>
+          </div>
+          <!-- /Register -->
         </div>
       </div>
-    </main>
-  </div>
+    </div>
 
-  <!-- 
-        This is a place for Alpine.js Teleport feature 
-        @see https://alpinejs.dev/directives/teleport
-      -->
-  <div id="x-teleport-target"></div>
-  <script>
-    window.addEventListener("DOMContentLoaded", () => Alpine.start());
-  </script>
-</body>
+    <!-- / Content -->
 
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="Bhavani/vendor/libs/jquery/jquery.js"></script>
+    <script src="Bhavani/vendor/libs/popper/popper.js"></script>
+    <script src="Bhavani/vendor/js/bootstrap.js"></script>
+    <script src="Bhavani/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script src="Bhavani/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+
+    <!-- Main JS -->
+    <script src="Bhavani/js/main.js"></script>
+
+    <!-- Page JS -->
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
 </html>

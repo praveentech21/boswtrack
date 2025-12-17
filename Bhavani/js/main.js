@@ -1,126 +1,118 @@
-(function ($) {
-    "use strict";
+/**
+ * Main
+ */
 
-    // Spinner
-    var spinner = function () {
-        setTimeout(function () {
-            if ($('#spinner').length > 0) {
-                $('#spinner').removeClass('show');
-            }
-        }, 1);
+'use strict';
+
+let menu, animate;
+
+(function () {
+  // Initialize menu
+  //-----------------
+
+  let layoutMenuEl = document.querySelectorAll('#layout-menu');
+  layoutMenuEl.forEach(function (element) {
+    menu = new Menu(element, {
+      orientation: 'vertical',
+      closeChildren: false
+    });
+    // Change parameter to true if you want scroll animation
+    window.Helpers.scrollToActive((animate = false));
+    window.Helpers.mainMenu = menu;
+  });
+
+  // Initialize menu togglers and bind click on each
+  let menuToggler = document.querySelectorAll('.layout-menu-toggle');
+  menuToggler.forEach(item => {
+    item.addEventListener('click', event => {
+      event.preventDefault();
+      window.Helpers.toggleCollapsed();
+    });
+  });
+
+  // Display menu toggle (layout-menu-toggle) on hover with delay
+  let delay = function (elem, callback) {
+    let timeout = null;
+    elem.onmouseenter = function () {
+      // Set timeout to be a timer which will invoke callback after 300ms (not for small screen)
+      if (!Helpers.isSmallScreen()) {
+        timeout = setTimeout(callback, 300);
+      } else {
+        timeout = setTimeout(callback, 0);
+      }
     };
-    spinner();
-    
-    
-    // Initiate the wowjs
-    new WOW().init();
 
-
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
-        } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
-        }
+    elem.onmouseleave = function () {
+      // Clear any timers set to timeout
+      document.querySelector('.layout-menu-toggle').classList.remove('d-block');
+      clearTimeout(timeout);
+    };
+  };
+  if (document.getElementById('layout-menu')) {
+    delay(document.getElementById('layout-menu'), function () {
+      // not for small screen
+      if (!Helpers.isSmallScreen()) {
+        document.querySelector('.layout-menu-toggle').classList.add('d-block');
+      }
     });
-    
-    // Dropdown on mouse hover
-    const $dropdown = $(".dropdown");
-    const $dropdownToggle = $(".dropdown-toggle");
-    const $dropdownMenu = $(".dropdown-menu");
-    const showClass = "show";
-    
-    $(window).on("load resize", function() {
-        if (this.matchMedia("(min-width: 992px)").matches) {
-            $dropdown.hover(
-            function() {
-                const $this = $(this);
-                $this.addClass(showClass);
-                $this.find($dropdownToggle).attr("aria-expanded", "true");
-                $this.find($dropdownMenu).addClass(showClass);
-            },
-            function() {
-                const $this = $(this);
-                $this.removeClass(showClass);
-                $this.find($dropdownToggle).attr("aria-expanded", "false");
-                $this.find($dropdownMenu).removeClass(showClass);
-            }
-            );
-        } else {
-            $dropdown.off("mouseenter mouseleave");
-        }
+  }
+
+  // Display in main menu when menu scrolls
+  let menuInnerContainer = document.getElementsByClassName('menu-inner'),
+    menuInnerShadow = document.getElementsByClassName('menu-inner-shadow')[0];
+  if (menuInnerContainer.length > 0 && menuInnerShadow) {
+    menuInnerContainer[0].addEventListener('ps-scroll-y', function () {
+      if (this.querySelector('.ps__thumb-y').offsetTop) {
+        menuInnerShadow.style.display = 'block';
+      } else {
+        menuInnerShadow.style.display = 'none';
+      }
     });
+  }
 
+  // Init helpers & misc
+  // --------------------
 
-    // Facts counter
-    $('[data-toggle="counter-up"]').counterUp({
-        delay: 10,
-        time: 2000
-    });
-    
-    
-    // Back to top button
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 100) {
-            $('.back-to-top').fadeIn('slow');
-        } else {
-            $('.back-to-top').fadeOut('slow');
-        }
-    });
-    $('.back-to-top').click(function () {
-        $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
-        return false;
-    });
+  // Init BS Tooltip
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
 
+  // Accordion active class
+  const accordionActiveFunction = function (e) {
+    if (e.type == 'show.bs.collapse' || e.type == 'show.bs.collapse') {
+      e.target.closest('.accordion-item').classList.add('active');
+    } else {
+      e.target.closest('.accordion-item').classList.remove('active');
+    }
+  };
 
-    // Testimonials carousel
-    $(".testimonial-carousel").owlCarousel({
-        autoplay: true,
-        smartSpeed: 1500,
-        dots: true,
-        loop: true,
-        center: true,
-        responsive: {
-            0:{
-                items:1
-            },
-            576:{
-                items:1
-            },
-            768:{
-                items:2
-            },
-            992:{
-                items:3
-            }
-        }
-    });
+  const accordionTriggerList = [].slice.call(document.querySelectorAll('.accordion'));
+  const accordionList = accordionTriggerList.map(function (accordionTriggerEl) {
+    accordionTriggerEl.addEventListener('show.bs.collapse', accordionActiveFunction);
+    accordionTriggerEl.addEventListener('hide.bs.collapse', accordionActiveFunction);
+  });
 
+  // Auto update layout based on screen size
+  window.Helpers.setAutoUpdate(true);
 
-    // Vendor carousel
-    $('.vendor-carousel').owlCarousel({
-        loop: true,
-        margin: 45,
-        dots: false,
-        loop: true,
-        autoplay: true,
-        smartSpeed: 1000,
-        responsive: {
-            0:{
-                items:2
-            },
-            576:{
-                items:4
-            },
-            768:{
-                items:6
-            },
-            992:{
-                items:8
-            }
-        }
-    });
-    
-})(jQuery);
+  // Toggle Password Visibility
+  window.Helpers.initPasswordToggle();
 
+  // Speech To Text
+  window.Helpers.initSpeechToText();
+
+  // Manage menu expanded/collapsed with templateCustomizer & local storage
+  //------------------------------------------------------------------
+
+  // If current layout is horizontal OR current window screen is small (overlay menu) than return from here
+  if (window.Helpers.isSmallScreen()) {
+    return;
+  }
+
+  // If current layout is vertical and current window screen is > small
+
+  // Auto update menu collapsed/expanded based on the themeConfig
+  window.Helpers.setCollapsed(true, false);
+})();
